@@ -2,9 +2,7 @@
 
 a small Auto_Eat&amp;Drink Addon for Kronos V 1.12.1
 
-================================================================================
 AutoDrinkEat (WoW 1.12.1 / Vanilla)
-================================================================================
 
 A lightweight, event-driven addon for automated eating and drinking with 
 zone-aware item prioritization (Mage consumables -> Battleground rations -> 
