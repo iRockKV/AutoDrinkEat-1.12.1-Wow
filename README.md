@@ -44,7 +44,9 @@ icon and remaining item count.
 3. SLASH COMMANDS
 --------------------------------------------------------------------------------
 /autorest   - Drinks and eats simultaneously (if Mana and/or HP are below 100%)
+
 /autodrink  - Drinks only (if Mana is below 100%)
+
 /autoeat    - Eats only (if HP is below 100%)
 
 
