@@ -1,0 +1,6 @@
+## Interface: 11200
+## Title: AutoDrinkEat
+## Autor: iRock - Kronos V
+## Notes: Trinkt und isst nach Prioritaet ohne Buff-Food
+## Version: 1.0
+AutoDrinkEat.lua
