@@ -1,5 +1,5 @@
 -- ============================================================================
--- Base Item Lists
+-- Base Item Lists (1.12.1 English Client - No Buff Food)
 -- ============================================================================
 
 local MAGE_WATER = {
@@ -70,13 +70,13 @@ local function BuildPriorityList(isWater)
 	local list = {}
 	local zone = GetRealZoneText() or ""
 
-	-- Mage consumables always first
+	-- 1. Mage consumables always first
 	local mageList = isWater and MAGE_WATER or MAGE_FOOD
 	for _, item in ipairs(mageList) do
 		table.insert(list, item)
 	end
 
-	-- Add matching BG consumables
+	-- 2. Matching BG consumables ONLY inside their respective BG
 	if zone == "Alterac Valley" then
 		for _, item in ipairs(AV_ITEMS) do
 			table.insert(list, item)
@@ -91,7 +91,7 @@ local function BuildPriorityList(isWater)
 		end
 	end
 
-	-- Fallback to standard consumables
+	-- 3. Standard consumables
 	local normalList = isWater and NORMAL_WATER or NORMAL_FOOD
 	for _, item in ipairs(normalList) do
 		table.insert(list, item)
@@ -105,6 +105,7 @@ end
 -- ============================================================================
 
 local lastComboUse = 0
+local lastMacroWater = nil
 
 local function IsComboItem(name)
 	if not name then return false end
@@ -160,12 +161,13 @@ end
 -- ============================================================================
 
 local function UpdateMacroDisplay()
+	if not GetMacroIndexByName or not EditMacro then return end
 	local macroIndex = GetMacroIndexByName("autorest")
 	if macroIndex and macroIndex > 0 then
 		local waterList = BuildPriorityList(true)
 		local _, _, _, waterName = FindBestItem(waterList)
-		if waterName then
-			-- Keep SuperMacro icon and count synced
+		if waterName and waterName ~= lastMacroWater then
+			lastMacroWater = waterName
 			EditMacro(macroIndex, "autorest", 1, "/autorest\n/run if false then UseItemByName(\"" .. waterName .. "\") end", 1)
 		end
 	end
@@ -185,13 +187,12 @@ function ADE_Drink()
 	local bag, slot, _, foundName = FindBestItem(waterList)
 
 	if bag and slot then
-		-- Avoid double-triggering combo items while eating
 		if IsComboItem(foundName) then
 			if IsAlreadyEating() or (GetTime() - lastComboUse) < 0.5 then return end
 		end
 
 		local _, duration = GetContainerItemCooldown(bag, slot)
-		if duration == 0 then
+		if not duration or duration == 0 then
 			UseContainerItem(bag, slot)
 			if IsComboItem(foundName) then
 				lastComboUse = GetTime()
@@ -209,13 +210,12 @@ function ADE_Eat()
 	local bag, slot, _, foundName = FindBestItem(foodList)
 
 	if bag and slot then
-		-- Avoid double-triggering combo items while drinking
 		if IsComboItem(foundName) then
 			if IsAlreadyDrinking() or (GetTime() - lastComboUse) < 0.5 then return end
 		end
 
 		local _, duration = GetContainerItemCooldown(bag, slot)
-		if duration == 0 then
+		if not duration or duration == 0 then
 			UseContainerItem(bag, slot)
 			if IsComboItem(foundName) then
 				lastComboUse = GetTime()
